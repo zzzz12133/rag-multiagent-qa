@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RAG 多 Agent 企业智能问答系统：路由、检索、生成、反思四个 Agent 协同，支持双路召回、Rerank 与引用溯源。">
+  <meta name="theme-color" content="#f3f6f4">
+  <title>RAG 多 Agent · 企业智能问答</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310233b'/%3E%3Cpath d='M18 42V22h11c6 0 9 3 9 8 0 4-2 6-6 7l8 5h-7l-7-5v5H18zm8-11h3c2 0 3-1 3-2s-1-2-3-2h-3v4z' fill='%23f3f6f4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="RAG 多 Agent 首页">
+        <span class="brand-mark">R</span>
+        <span class="brand-text">RAG <i>/</i> MULTI-AGENT</span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#demo">交互演示</a>
+        <a href="#architecture">系统架构</a>
+        <a href="#features">核心能力</a>
+        <a class="nav-github" href="https://github.com/zzzz12133/rag-multiagent-qa" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Enterprise RAG · Multi-Agent</p>
+          <h1 id="hero-title">让每一个答案，<br><em>都有出处。</em></h1>
+          <p class="lead">基于 LangChain + LangGraph + FastAPI 的企业知识库问答系统。路由、检索、生成、反思四个 Agent 协同，把散落的文档变成可追溯的答案。</p>
+          <div class="badges" aria-label="项目亮点">
+            <span>4 Agent 协作</span>
+            <span>双路召回</span>
+            <span>引用溯源</span>
+            <span>SSE 流式</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="#demo">体验问答 <span>↓</span></a>
+            <a class="button ghost" href="https://github.com/zzzz12133/rag-multiagent-qa" target="_blank" rel="noreferrer">查看源码 <span>↗</span></a>
+          </div>
+          <p class="hero-note">静态演示 · 使用示例知识库 · 无需登录</p>
+        </div>
+
+        <aside class="chat-shell" id="demo" aria-label="企业知识库问答演示">
+          <div class="chat-top">
+            <div class="chat-identity">
+              <div class="agent-avatar" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <div>
+                <strong>知识库问答</strong>
+                <p><span class="status-dot"></span> Demo 在线 · 示例数据</p>
+              </div>
+            </div>
+            <div class="chat-tag">RAG</div>
+          </div>
+
+          <div class="chat-body" id="chat-body" aria-live="polite">
+            <div class="message assistant">
+              <div class="bubble">
+                <p>你好，我是企业知识库助手。可以问我制度、流程或福利相关的问题，我会给出答案和出处。</p>
+              </div>
+              <p class="message-meta">Router Agent · 已就绪</p>
+            </div>
+            <div class="message user">
+              <div class="bubble"><p>年假如何申请？</p></div>
+            </div>
+            <div class="message assistant">
+              <div class="bubble">
+                <p>入职满 1 年可享 5 天年假，满 3 年增至 10 天。请在 OA「人事 - 休假申请」提交，至少提前 3 个工作日。</p>
+                <div class="citations">
+                  <div class="citation"><b>1</b><span>员工手册 · 4.2 年假与调休</span></div>
+                  <div class="citation"><b>2</b><span>OA 操作指南 · 休假申请流程</span></div>
+                </div>
+              </div>
+              <p class="message-meta">Router → Retrieve → Generate · 已引用 2 个片段</p>
+            </div>
+          </div>
+
+          <div class="suggestions" id="suggestions" aria-label="示例问题">
+            <button type="button" data-question="年假如何申请？">年假如何申请？</button>
+            <button type="button" data-question="报销流程是什么？">报销流程是什么？</button>
+            <button type="button" data-question="试用期多久？">试用期多久？</button>
+          </div>
+
+          <form class="composer" id="chat-form">
+            <label class="sr-only" for="question">输入问题</label>
+            <input id="question" name="question" type="text" autocomplete="off" placeholder="问一个企业知识库问题…" maxlength="160">
+            <button type="submit" aria-label="发送问题">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 20 4l-4.2 16-3.6-6.2L4 11.5Z"/><path d="m12.2 13.8 3.4-6.1"/></svg>
+            </button>
+          </form>
+          <p class="chat-foot">静态交互演示 · 答案来自示例知识库，不连接真实企业数据</p>
+        </aside>
+      </section>
+
+      <section class="metrics" aria-label="项目数据">
+        <div><strong>04</strong><span>协同 Agent</span></div>
+        <div><strong>02</strong><span>召回通道</span></div>
+        <div><strong>Top 3</strong><span>Rerank 精排</span></div>
+        <div><strong>SSE</strong><span>流式返回</span></div>
+      </section>
+
+      <section class="section architecture" id="architecture" aria-labelledby="architecture-title">
+        <div class="section-head">
+          <p class="eyebrow"><span></span> How it works</p>
+          <h2 id="architecture-title">四个 Agent，一条可追溯的链路。</h2>
+          <p>不是把问题直接丢给模型。系统先判断意图，再检索证据、组织答案，最后做一轮质量校验。</p>
+        </div>
+
+        <div class="pipeline">
+          <article class="agent-card">
+            <div class="agent-index">01</div>
+            <div class="agent-icon" aria-hidden="true">↗</div>
+            <h3>路由 Agent</h3>
+            <p>识别问题类型，简单问题直接回答，复杂问题拆解为子问题队列。</p>
+            <span class="agent-tag">Router</span>
+          </article>
+          <article class="agent-card">
+            <div class="agent-index">02</div>
+            <div class="agent-icon" aria-hidden="true">⌕</div>
+            <h3>检索 Agent</h3>
+            <p>稠密向量 + BM25 双路召回，RRF 融合后用 Rerank 精排上下文。</p>
+            <span class="agent-tag">Retrieve</span>
+          </article>
+          <article class="agent-card">
+            <div class="agent-index">03</div>
+            <div class="agent-icon" aria-hidden="true">✎</div>
+            <h3>生成 Agent</h3>
+            <p>基于证据片段组织回答，逐条绑定来源，避免无依据扩写。</p>
+            <span class="agent-tag">Generate</span>
+          </article>
+          <article class="agent-card">
+            <div class="agent-index">04</div>
+            <div class="agent-icon" aria-hidden="true">✓</div>
+            <h3>反思 Agent</h3>
+            <p>检查答案是否被引用支撑，不通过最多修订 2 轮，再返回引用结果。</p>
+            <span class="agent-tag">Reflect</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section features" id="features" aria-labelledby="features-title">
+        <div class="section-head compact">
+          <p class="eyebrow"><span></span> What makes it different</p>
+          <h2 id="features-title">答案之外，更重要的是证据。</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-mark">01</span>
+            <h3>引用可核验</h3>
+            <p>每个回答附来源文档与片段，支持人工回查，不让模型“自由发挥”。</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-mark">02</span>
+            <h3>多路召回</h3>
+            <p>向量语义召回与 BM25 关键词召回互补，RRF 融合后交给 Rerank 精排。</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-mark">03</span>
+            <h3>状态机编排</h3>
+            <p>LangGraph 管理 Agent 状态与分支，复杂问题拆解、流转和重试清晰可见。</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-mark">04</span>
+            <h3>流式对话</h3>
+            <p>SSE 逐步返回生成内容，Redis 缓存热点问答与多轮会话历史。</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-mark">05</span>
+            <h3>文档即知识</h3>
+            <p>Markdown / PDF / Word / TXT 解析、切分、向量化，一条命令完成入库。</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-mark">06</span>
+            <h3>可观测评估</h3>
+            <p>内置 Recall@K 评测脚本，用数据判断检索链路是否真的变好了。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section stack-section" id="stack" aria-labelledby="stack-title">
+        <div class="stack-copy">
+          <p class="eyebrow"><span></span> Under the hood</p>
+          <h2 id="stack-title">工程化，不止是 Prompt。</h2>
+          <p>从文档入库到答案生成，每一层都可以替换、观测和评估。默认本地 FAISS + 内存缓存，也可以切换到 Milvus + Redis。</p>
+          <a class="text-link" href="https://github.com/zzzz12133/rag-multiagent-qa" target="_blank" rel="noreferrer">阅读完整 README <span>↗</span></a>
+        </div>
+        <div class="stack-list" aria-label="技术栈">
+          <span>Python</span><span>FastAPI</span><span>LangChain</span><span>LangGraph</span>
+          <span>FAISS</span><span>Milvus</span><span>Redis</span><span>BGE</span>
+          <span>DeepSeek</span><span>Docker</span><span>SSE</span><span>Pydantic</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>RAG / Multi-Agent</strong>
+        <p>企业知识库 · 可追溯问答 · 2026</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/zzzz12133/rag-multiagent-qa" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#top">回到顶部 ↑</a>
+      </div>
+    </footer>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
